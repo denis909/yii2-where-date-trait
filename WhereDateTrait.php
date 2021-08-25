@@ -8,8 +8,29 @@ use DateTime;
 trait WhereDateTrait
 {
 
-    public function whereDate($attribute, $value, $format = 'Y-m-d')
+    public function whereDate($attribute, $value = null, $format = 'Y-m-d')
     {
+        if (is_array($attribute))
+        {
+            $i = 0;
+
+            foreach ($attribute as $k => $v)
+            {
+                if ($i == 0)
+                {
+                    $this->whereDate($k, $v, $format);
+                }
+                else
+                {
+                    $this->andWhereDate($k, $v, $format);
+                }
+
+                $i++;
+            }
+
+            return $this;
+        }
+
         $date = DateTime::createFromFormat($format, $value);
 
         if (!$date)
@@ -27,18 +48,18 @@ trait WhereDateTrait
         ]);
     }
 
-    public function filterWhereDate($attribute, $value)
+    public function andWhereDate($attribute, $value = null, $format = 'Y-m-d')
     {
-        if ($value)
+        if (is_array($attribute))
         {
-            return $this->whereDate($attribute, $value);
+            foreach ($attribute as $k => $v)
+            {
+                $this->andWhereDate($k, $v, $format);
+            }
+
+            return $this;
         }
 
-        return $this;
-    }
-
-    public function andWhereDate($attribute, $value, $format = 'Y-m-d')
-    {
         $date = DateTime::createFromFormat($format, $value);
 
         if (!$date)
@@ -56,11 +77,52 @@ trait WhereDateTrait
         ]);
     }
 
-    public function andFilterWhereDate($attribute, $value)
+    public function filterWhereDate($attribute, $value = null, $format = 'Y-m-d')
     {
+        if (is_array($attribute))
+        {
+            $i = 0;
+
+            foreach ($attribute as $k => $v)
+            {
+                if ($i == 0)
+                {
+                    $this->whereDate($k, $v, $format);
+                }
+                else
+                {
+                    $this->andWhereDate($k, $v, $format);
+                }
+
+                $i++;
+            }
+
+            return $this;
+        }
+        
         if ($value)
         {
-            return $this->andWhereDate($attribute, $value);
+            return $this->whereDate($attribute, $value, $format);
+        }
+
+        return $this;
+    }
+
+    public function andFilterWhereDate($attribute, $value = null, $format = 'Y-m-d')
+    {
+        if (is_array($attribute))
+        {
+            foreach ($attribute as $k => $v)
+            {
+                $this->andWhereDate($k, $v, $format);
+            }
+
+            return $this;
+        }
+
+        if ($value)
+        {
+            return $this->andWhereDate($attribute, $value, $format);
         }
 
         return $this;
