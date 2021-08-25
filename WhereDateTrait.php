@@ -81,25 +81,28 @@ trait WhereDateTrait
     {
         if (is_array($attribute))
         {
-            $i = 0;
+            $first = true;
 
             foreach ($attribute as $k => $v)
             {
-                if ($i == 0)
+                if ($value)
                 {
-                    $this->whereDate($k, $v, $format);
+                    if ($first)
+                    {
+                        $this->whereDate($k, $v, $format);
+                    
+                        $first = false;
+                    }
+                    else
+                    {
+                        $this->andWhereDate($k, $v, $format);
+                    }  
                 }
-                else
-                {
-                    $this->andWhereDate($k, $v, $format);
-                }
-
-                $i++;
             }
 
             return $this;
         }
-        
+
         if ($value)
         {
             return $this->whereDate($attribute, $value, $format);
@@ -114,7 +117,10 @@ trait WhereDateTrait
         {
             foreach ($attribute as $k => $v)
             {
-                $this->andWhereDate($k, $v, $format);
+                if ($value)
+                {
+                    $this->andWhereDate($k, $v, $format);
+                }
             }
 
             return $this;
