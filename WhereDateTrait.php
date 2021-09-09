@@ -117,7 +117,7 @@ trait WhereDateTrait
         {
             foreach ($attribute as $k => $v)
             {
-                if ($value)
+                if ($v)
                 {
                     $this->andWhereDate($k, $v, $format);
                 }
